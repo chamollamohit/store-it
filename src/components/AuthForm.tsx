@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { minLength, z } from "zod";
+import { minLength, string, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,8 @@ import {
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
+import { createAccount } from "@/lib/actions/user.actions";
+import OTPModel from "./OTPModel";
 
 const authFormSchema = (formType: "sign-in" | "sign-up") => {
     return z.object({
@@ -34,6 +36,7 @@ const authFormSchema = (formType: "sign-in" | "sign-up") => {
 function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [accountId, setAccountId] = useState(null);
 
     const formSchema = authFormSchema(type);
 
@@ -46,9 +49,20 @@ function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
     });
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        console.log(values);
+        setIsLoading(true);
+        setErrorMessage("");
+        try {
+            const user = await createAccount({
+                fullName: values.fullName || "",
+                email: values.email,
+            });
+
+            setAccountId(user);
+        } catch (error) {
+            setErrorMessage("Failed to create an account. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -139,7 +153,12 @@ function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
                     </div>
                 </form>
             </Form>
-            {/* {Otp Verification} */}
+            {accountId && (
+                <OTPModel
+                    email={form.getValues("email")}
+                    accountId={accountId}
+                />
+            )}
         </>
     );
 }
