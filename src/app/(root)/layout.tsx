@@ -25,7 +25,10 @@ async function Layout({ children }: { children: React.ReactNode }) {
                         fullName={currentUser.fullName}
                         email={currentUser.email}
                     />
-                    <Header />
+                    <Header
+                        userId={currentUser.$id}
+                        accountId={currentUser.accountId}
+                    />
                     <div className="main-content remove-scrollbar">
                         {children}
                     </div>

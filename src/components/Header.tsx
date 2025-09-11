@@ -6,12 +6,12 @@ import Search from "./Search";
 import FileUploader from "./FileUploader";
 import { logoutUser } from "@/lib/actions/user.actions";
 
-function Header() {
+function Header({ userId, accountId }: { userId: string; accountId: string }) {
     return (
         <header className="header">
             <Search />
             <div className="header-wrapper">
-                <FileUploader />
+                <FileUploader ownerId={userId} accountId={accountId} />
                 <form action={logoutUser}>
                     <Button type="submit" className="sign-out-button">
                         <Image
