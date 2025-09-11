@@ -3,7 +3,6 @@
 import { ID, Query } from "node-appwrite";
 import { createAdminClient, createSessionClient } from "../appwrite";
 import { appwriteConfig } from "../appwrite/config";
-import { parseStringify } from "../utils";
 import { cookies } from "next/headers";
 import { avatarPlaceholderUrl } from "@/app/Constants";
 import { redirect } from "next/navigation";
@@ -84,7 +83,7 @@ export const verifySecret = async ({
             httpOnly: true,
         });
 
-        return parseStringify({ sessionId: session.$id });
+        return { sessionId: session.$id };
     } catch (error) {
         handleError(error, "Failed to verify OTP");
     }
