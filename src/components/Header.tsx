@@ -12,7 +12,7 @@ function Header() {
             <Search />
             <div className="header-wrapper">
                 <FileUploader />
-                <form action={async () => await logoutUser()}>
+                <form action={logoutUser}>
                     <Button type="submit" className="sign-out-button">
                         <Image
                             src="/icons/logout.svg"
