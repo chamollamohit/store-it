@@ -124,7 +124,7 @@ export const signInUser = async ({ email }: { email: string }) => {
             return existingUser.accountId;
         }
 
-        return { accountId: null, error: "User not found" };
+        return { accountId: null, error: "Please Signup first!!" };
     } catch (error) {
         handleError(error, "Failed to sign in the user");
     }

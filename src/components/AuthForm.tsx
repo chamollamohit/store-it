@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { minLength, string, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -37,7 +37,6 @@ function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [accountId, setAccountId] = useState(null);
-
     const formSchema = authFormSchema(type);
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -52,20 +51,27 @@ function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
         setIsLoading(true);
         setErrorMessage("");
         try {
+            let newuser;
             const user =
                 type === "sign-up"
                     ? await createAccount({
                           fullName: values.fullName || "",
                           email: values.email,
                       })
-                    : await signInUser({ email: values.email });
+                    : (newuser = await signInUser({ email: values.email }));
+
+            if (!newuser?.accountId && type != "sign-up") {
+                setErrorMessage(newuser.error);
+            }
 
             setAccountId(user);
         } catch (error) {
+            console.log(error);
             setErrorMessage("Failed to create an account. Please try again.");
         } finally {
             setIsLoading(false);
         }
+        console.log(accountId);
     };
 
     return (
@@ -156,12 +162,13 @@ function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
                     </div>
                 </form>
             </Form>
-            {accountId && (
-                <OTPModel
-                    email={form.getValues("email")}
-                    accountId={accountId}
-                />
-            )}
+            {errorMessage ||
+                (accountId && (
+                    <OTPModel
+                        email={form.getValues("email")}
+                        accountId={accountId}
+                    />
+                ))}
         </>
     );
 }

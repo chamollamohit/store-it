@@ -18,7 +18,13 @@ async function Layout({ children }: { children: React.ReactNode }) {
                     email={currentUser.email}
                 />
                 <div className="flex flex-col flex-1">
-                    <MobileNavigation {...currentUser} />
+                    <MobileNavigation
+                        avatar={currentUser.avatar}
+                        ownerId={currentUser.ownerId}
+                        accountId={currentUser.accountId}
+                        fullName={currentUser.fullName}
+                        email={currentUser.email}
+                    />
                     <Header />
                     <div className="main-content remove-scrollbar">
                         {children}
