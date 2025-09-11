@@ -1,10 +1,12 @@
 "use server";
 
 import { ID, Query } from "node-appwrite";
-import { createAdminClient } from "../appwrite";
+import { createAdminClient, createSessionClient } from "../appwrite";
 import { appwriteConfig } from "../appwrite/config";
 import { parseStringify } from "../utils";
 import { cookies } from "next/headers";
+import { avatarPlaceholderUrl } from "@/app/Constants";
+import { redirect } from "next/navigation";
 
 const handleError = (error: unknown, message: string) => {
     console.log(error, message);
@@ -58,7 +60,7 @@ export const createAccount = async ({
             {
                 fullName,
                 email,
-                avatar: "https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg",
+                avatar: avatarPlaceholderUrl,
                 accountId,
             }
         );
@@ -85,5 +87,45 @@ export const verifySecret = async ({
         return parseStringify({ sessionId: session.$id });
     } catch (error) {
         handleError(error, "Failed to verify OTP");
+    }
+};
+
+export const getCurrentUser = async () => {
+    const { tablesDb, account } = await createSessionClient();
+    const result = await account.get();
+    const user = await tablesDb.listRows(
+        appwriteConfig.databaseId,
+        appwriteConfig.usersTableId,
+        [Query.equal("accountId", result.$id)]
+    );
+
+    if (user.total <= 0) return null;
+    return user.rows[0];
+};
+
+export const logoutUser = async () => {
+    const { account } = await createSessionClient();
+
+    try {
+        await account.deleteSession("current");
+        (await cookies()).delete("appwrite-session");
+    } catch (error) {
+        handleError(error, "Failed to logout user");
+    } finally {
+        redirect("/sign-in");
+    }
+};
+
+export const signInUser = async ({ email }: { email: string }) => {
+    try {
+        const existingUser = await getUserByEmail(email);
+        if (existingUser) {
+            await sendEmailOtp(email);
+            return existingUser.accountId;
+        }
+
+        return { accountId: null, error: "User not found" };
+    } catch (error) {
+        handleError(error, "Failed to sign in the user");
     }
 };

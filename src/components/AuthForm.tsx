@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
-import { createAccount } from "@/lib/actions/user.actions";
+import { createAccount, signInUser } from "@/lib/actions/user.actions";
 import OTPModel from "./OTPModel";
 
 const authFormSchema = (formType: "sign-in" | "sign-up") => {
@@ -52,10 +52,13 @@ function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
         setIsLoading(true);
         setErrorMessage("");
         try {
-            const user = await createAccount({
-                fullName: values.fullName || "",
-                email: values.email,
-            });
+            const user =
+                type === "sign-up"
+                    ? await createAccount({
+                          fullName: values.fullName || "",
+                          email: values.email,
+                      })
+                    : await signInUser({ email: values.email });
 
             setAccountId(user);
         } catch (error) {

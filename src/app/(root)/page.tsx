@@ -1,6 +1,6 @@
 export default function Home() {
     return (
-        <div className="">
+        <div className="flex-center h-screen">
             <h1 className="text-brand">
                 StoreIt - The only storage solution you need.
             </h1>
