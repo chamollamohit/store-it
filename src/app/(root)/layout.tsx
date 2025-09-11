@@ -10,7 +10,7 @@ async function Layout({ children }: { children: React.ReactNode }) {
 
     if (!currentUser) return redirect("/sign-in");
     return (
-        <main className="'flex flex-col h-screen">
+        <main className="flex flex-col h-screen">
             <section className="flex h-full flex-1 flex-row">
                 <Sidebar
                     fullName={currentUser.fullName}
