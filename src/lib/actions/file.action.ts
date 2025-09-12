@@ -8,7 +8,7 @@ import { ID } from "node-appwrite";
 import { constructFileUrl, getFileType } from "../utils";
 import { revalidatePath } from "next/cache";
 
-export const upload = async ({
+export const uploadFile = async ({
     file,
     ownerId,
     accountId,
@@ -18,22 +18,22 @@ export const upload = async ({
 
     try {
         const inputFile = InputFile.fromBuffer(file, file.name);
-        const bucletFile = await storage.createFile(
+        const bucketFile = await storage.createFile(
             appwriteConfig.bucketId,
             ID.unique(),
             inputFile
         );
 
         const fileDocument = {
-            type: getFileType({ fileName: bucletFile.name }).type,
-            name: bucletFile.name,
-            url: constructFileUrl(bucletFile.$id),
-            extension: getFileType({ fileName: bucletFile.name }).extension,
-            size: bucletFile.sizeOriginal,
+            type: getFileType({ fileName: bucketFile.name }).type,
+            NAME: bucketFile.name,
+            url: constructFileUrl(bucketFile.$id),
+            extension: getFileType({ fileName: bucketFile.name }).extension,
+            size: bucketFile.sizeOriginal,
             owner: ownerId,
-            account: accountId,
+            accountId,
             users: [],
-            bucletFileId: bucletFile.$id,
+            bucketFileId: bucketFile.$id,
         };
 
         const newFile = await tablesDb
@@ -46,7 +46,7 @@ export const upload = async ({
             .catch(async (error: unknown) => {
                 await storage.deleteFile(
                     appwriteConfig.bucketId,
-                    bucletFile.$id
+                    bucketFile.$id
                 );
                 handleError(
                     error,

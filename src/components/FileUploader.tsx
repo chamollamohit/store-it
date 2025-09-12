@@ -7,6 +7,8 @@ import Image from "next/image";
 import { Thumnail } from "./Thumnail";
 import { MAX_FILE_SIZE } from "@/Constants";
 import { toast } from "sonner";
+import { uploadFile } from "@/lib/actions/file.action";
+import { usePathname } from "next/navigation";
 
 function FileUploader({
     ownerId,
@@ -18,33 +20,54 @@ function FileUploader({
     className?: string;
 }) {
     const [files, setFiles] = useState<File[]>([]);
+    const path = usePathname();
+    const onDrop = useCallback(
+        async (acceptedFiles: File[]) => {
+            setFiles(acceptedFiles);
+            const uploadFilePromise = acceptedFiles.map(async (file) => {
+                if (file.size > MAX_FILE_SIZE) {
+                    setFiles((prev) =>
+                        prev.filter((prevfile) => prevfile.name != file.name)
+                    );
+                    return toast("File is to large", {
+                        description: (
+                            <p className="text-white">
+                                <span className="font-semibold">
+                                    {file.name}{" "}
+                                </span>
+                                is too large. Max size is 50 MB.
+                            </p>
+                        ),
 
-    const onDrop = useCallback(async (acceptedFiles: File[]) => {
-        setFiles(acceptedFiles);
-        const uploadFilePromise = acceptedFiles.map(async (file) => {
-            if (file.size > MAX_FILE_SIZE) {
-                setFiles((prev) =>
-                    prev.filter((prevfile) => prevfile.name != file.name)
-                );
-                toast("File is to large", {
-                    description: (
-                        <p className="text-white">
-                            <span className="font-semibold">{file.name} </span>
-                            is too large. Max size is 50 MB.
-                        </p>
-                    ),
-
-                    classNames: {
-                        toast: "!bg-red !rounded-[10px]",
-                        title: "font-semibold !text-white ",
-                        description: "text-sm ",
-                    },
-                    position: "top-center",
+                        classNames: {
+                            toast: "!bg-red !rounded-[10px]",
+                            title: "!font-extrabold !text-white ",
+                            description: "text-sm ",
+                        },
+                        position: "top-center",
+                    });
+                }
+                return await uploadFile({
+                    file,
+                    accountId,
+                    ownerId,
+                    path,
+                }).then((uploadFile) => {
+                    if (uploadFile) {
+                        setFiles((prev) =>
+                            prev.filter(
+                                (prevFile) => prevFile.name != file.name
+                            )
+                        );
+                    }
+                    console.log(uploadFile);
                 });
-            }
-        });
-    }, []);
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+            });
+            await Promise.all(uploadFilePromise);
+        },
+        [ownerId, accountId, path]
+    );
+    const { getRootProps, getInputProps } = useDropzone({
         onDrop,
     });
 

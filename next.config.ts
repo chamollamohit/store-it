@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
             { protocol: "https", hostname: "cloud.appwrite.io" },
         ],
     },
+    experimental: {
+        serverActions: {
+            bodySizeLimit: "51mb",
+        },
+    },
 };
 
 export default nextConfig;
