@@ -5,6 +5,8 @@ import { Button } from "./ui/button";
 import { cn, convertFileToUrl, getFileType } from "@/lib/utils";
 import Image from "next/image";
 import { Thumnail } from "./Thumnail";
+import { MAX_FILE_SIZE } from "@/Constants";
+import { toast } from "sonner";
 
 function FileUploader({
     ownerId,
@@ -19,6 +21,28 @@ function FileUploader({
 
     const onDrop = useCallback(async (acceptedFiles: File[]) => {
         setFiles(acceptedFiles);
+        const uploadFilePromise = acceptedFiles.map(async (file) => {
+            if (file.size > MAX_FILE_SIZE) {
+                setFiles((prev) =>
+                    prev.filter((prevfile) => prevfile.name != file.name)
+                );
+                toast("File is to large", {
+                    description: (
+                        <p className="text-white">
+                            <span className="font-semibold">{file.name} </span>
+                            is too large. Max size is 50 MB.
+                        </p>
+                    ),
+
+                    classNames: {
+                        toast: "!bg-red !rounded-[10px]",
+                        title: "font-semibold !text-white ",
+                        description: "text-sm ",
+                    },
+                    position: "top-center",
+                });
+            }
+        });
     }, []);
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
@@ -33,17 +57,22 @@ function FileUploader({
     };
 
     return (
-        <div {...getRootProps()} className="cursor-pointer">
-            <input {...getInputProps()} />
-            <Button type="button" className={cn("uploader-button", className)}>
-                <Image
-                    src={"/icons/upload.svg"}
-                    alt="upload"
-                    width={24}
-                    height={24}
-                />
-                <p>Upload</p>
-            </Button>
+        <>
+            <div {...getRootProps()} className="cursor-pointer">
+                <input {...getInputProps()} />
+                <Button
+                    type="button"
+                    className={cn("uploader-button", className)}
+                >
+                    <Image
+                        src={"/icons/upload.svg"}
+                        alt="upload"
+                        width={24}
+                        height={24}
+                    />
+                    <p>Upload</p>
+                </Button>
+            </div>
             {files.length > 0 && (
                 <ul className="uploader-preview-list">
                     <h4 className="h4 text-light-100">Uploading</h4>
@@ -62,14 +91,19 @@ function FileUploader({
                                         extension={extension}
                                         url={convertFileToUrl(file)}
                                     />
-                                    <div className="preview-item-name">
-                                        {file.name}
-                                        <Image
-                                            src={"/icons/file-loader.gif"}
-                                            alt="loader"
-                                            width={100}
-                                            height={50}
-                                        />
+                                    <div className="preview-item-name flex">
+                                        <div className="sm:whitespace-nowrap">
+                                            {file.name}
+                                        </div>
+                                        <div>
+                                            <Image
+                                                src={"/icons/file-loader.gif"}
+                                                alt="loader"
+                                                width={100}
+                                                height={50}
+                                                unoptimized={true}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                                 <Image
@@ -86,12 +120,7 @@ function FileUploader({
                     })}
                 </ul>
             )}
-            {/* {isDragActive ? (
-                <p>Drop the files here ...</p>
-            ) : (
-                <p>Drag 'n' drop some files here, or click to select files</p>
-            )} */}
-        </div>
+        </>
     );
 }
 

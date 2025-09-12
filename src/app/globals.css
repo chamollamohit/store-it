@@ -301,6 +301,7 @@
     @apply text-[14px] leading-[20px] font-semibold mb-2 line-clamp-1 max-w-[300px];
   }
 
+
   /* ===== AUTH FORM ===== */
   .auth-form {
     @apply flex max-h-[800px] w-full max-w-[580px] flex-col justify-center space-y-6 transition-all lg:h-full lg:space-y-8;

@@ -1,5 +1,5 @@
 "use client";
-import { avatarPlaceholderUrl, navItems } from "@/app/Constants";
+import { avatarPlaceholderUrl, navItems } from "@/Constants";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";

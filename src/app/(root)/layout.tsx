@@ -4,6 +4,7 @@ import Sidebar from "@/components/Sidebar";
 import { getCurrentUser } from "@/lib/actions/user.actions";
 import { redirect } from "next/navigation";
 import React from "react";
+import { Toaster } from "@/components/ui/sonner";
 
 async function Layout({ children }: { children: React.ReactNode }) {
     const currentUser = await getCurrentUser();
@@ -34,6 +35,7 @@ async function Layout({ children }: { children: React.ReactNode }) {
                     </div>
                 </div>
             </section>
+            <Toaster />
         </main>
     );
 }

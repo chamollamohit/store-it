@@ -9,7 +9,7 @@ import {
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Separator } from "@radix-ui/react-separator";
-import { navItems } from "@/app/Constants";
+import { navItems } from "@/Constants";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
@@ -37,7 +37,7 @@ function MobileNavigation({
     return (
         <header className="mobile-header">
             <Image
-                src={"/icons/logo-full-BRAND.svg"}
+                src={"/icons/logo-full-brand.svg"}
                 alt="log"
                 width={120}
                 height={52}
