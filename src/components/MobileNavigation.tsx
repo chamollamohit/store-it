@@ -18,18 +18,18 @@ import { logoutUser } from "@/lib/actions/user.actions";
 
 interface Props {
     avatar: string;
-    ownerId: string;
     accountId: string;
     fullName: string;
     email: string;
+    userId: string;
 }
 
 function MobileNavigation({
     avatar,
-    ownerId,
     accountId,
     fullName,
     email,
+    userId,
 }: Props) {
     const [Open, setOpen] = useState(false);
     const pathname = usePathname();
@@ -104,7 +104,7 @@ function MobileNavigation({
                     </nav>
                     <Separator className="my-5 bg-light-200/20" />
                     <div className="flex flex-col justify-between gap-5">
-                        <FileUploader ownerId={ownerId} accountId={accountId} />
+                        <FileUploader ownerId={userId} accountId={accountId} />
                         <Button
                             type="submit"
                             className="mobile-sign-out-button"

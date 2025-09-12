@@ -8,7 +8,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 async function Layout({ children }: { children: React.ReactNode }) {
     const currentUser = await getCurrentUser();
-    // console.log(currentUser.ownerId);
+
     if (!currentUser) return redirect("/sign-in");
     return (
         <main className="flex flex-col h-screen">
@@ -21,10 +21,10 @@ async function Layout({ children }: { children: React.ReactNode }) {
                 <div className="flex flex-col flex-1">
                     <MobileNavigation
                         avatar={currentUser.avatar}
-                        ownerId={currentUser.ownerId}
                         accountId={currentUser.accountId}
                         fullName={currentUser.fullName}
                         email={currentUser.email}
+                        userId={currentUser.$id}
                     />
                     <Header
                         userId={currentUser.$id}
