@@ -4,7 +4,7 @@ import { useDropzone } from "react-dropzone";
 import { Button } from "./ui/button";
 import { cn, convertFileToUrl, getFileType } from "@/lib/utils";
 import Image from "next/image";
-import { Thumnail } from "./Thumnail";
+import { Thumbnail } from "./Thumbnail";
 import { MAX_FILE_SIZE } from "@/Constants";
 import { toast } from "sonner";
 import { uploadFile } from "@/lib/actions/file.action";
@@ -130,13 +130,13 @@ function FileUploader({
                                 className="uploader-preview-item"
                             >
                                 <div className="flex items-center gap-3">
-                                    <Thumnail
+                                    <Thumbnail
                                         type={type}
                                         extension={extension}
                                         url={convertFileToUrl(file)}
                                     />
                                     <div className="preview-item-name flex">
-                                        <div className="sm:whitespace-nowrap">
+                                        <div className="line-clamp-1">
                                             {file.name}
                                         </div>
                                         <div>

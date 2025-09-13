@@ -31,22 +31,18 @@ export const getFileType = ({
         image: ["jpg", "jpeg", "png", "gif", "svg", "webp", "bmp"],
         video: ["mp4", "mov", "avi", "mkv", "webm", "flv"],
         audio: ["mp3", "wav", "ogg", "aac", "m4a"],
-        document: ["pdf", "doc", "docx", "txt", "rtf", "odt"],
-        spreadsheet: ["xls", "xlsx", "csv"],
-        presentation: ["ppt", "pptx"],
-        archive: ["zip", "rar", "7z", "tar", "gz"],
-        code: [
-            "js",
-            "ts",
-            "jsx",
-            "tsx",
-            "html",
-            "css",
-            "json",
-            "xml",
-            "md",
-            "py",
-            "java",
+        document: [
+            "pdf",
+            "doc",
+            "docx",
+            "txt",
+            "rtf",
+            "odt",
+            "xls",
+            "xlsx",
+            "csv",
+            "ppt",
+            "pptx",
         ],
     };
 
@@ -57,7 +53,7 @@ export const getFileType = ({
     }
 
     // If no specific type is found, default to a generic 'file' type
-    return { type: "file", extension };
+    return { type: "other", extension };
 };
 
 export const convertFileToUrl = (file: File) => URL.createObjectURL(file);
@@ -123,4 +119,69 @@ export const getFileIcon = (extension: string, type: string) => {
 
 export const constructFileUrl = (bucketFileId: string) => {
     return `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${process.env.NEXT_PUBLIC_APPWRITE_BUCKET}/files/${bucketFileId}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT}`;
+};
+
+export const convertFileSize = (sizeInBytes: number, digits?: number) => {
+    if (sizeInBytes < 1024) {
+        return sizeInBytes + " Bytes"; // Less than 1 KB, show in Bytes
+    } else if (sizeInBytes < 1024 * 1024) {
+        const sizeInKB = sizeInBytes / 1024;
+        return sizeInKB.toFixed(digits || 1) + " KB"; // Less than 1 MB, show in KB
+    } else if (sizeInBytes < 1024 * 1024 * 1024) {
+        const sizeInMB = sizeInBytes / (1024 * 1024);
+        return sizeInMB.toFixed(digits || 1) + " MB"; // Less than 1 GB, show in MB
+    } else {
+        const sizeInGB = sizeInBytes / (1024 * 1024 * 1024);
+        return sizeInGB.toFixed(digits || 1) + " GB"; // 1 GB or more, show in GB
+    }
+};
+
+export const formatDateTime = (isoString: string | null | undefined) => {
+    if (!isoString) return "—";
+
+    const date = new Date(isoString);
+
+    // Get hours and adjust for 12-hour format
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const period = hours >= 12 ? "pm" : "am";
+
+    // Convert hours to 12-hour format
+    hours = hours % 12 || 12;
+
+    // Format the time and date parts
+    const time = `${hours}:${minutes.toString().padStart(2, "0")}${period}`;
+    const day = date.getDate();
+    const monthNames = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+    ];
+    const month = monthNames[date.getMonth()];
+
+    return `${time}, ${day} ${month}`;
+};
+
+export const getFileTypesParams = (type: string) => {
+    switch (type) {
+        case "documents":
+            return ["document"];
+        case "images":
+            return ["image"];
+        case "media":
+            return ["video", "audio"];
+        case "others":
+            return ["other"];
+        default:
+            return ["document"];
+    }
 };

@@ -2,7 +2,7 @@ import { cn, getFileIcon } from "@/lib/utils";
 import Image from "next/image";
 import React from "react";
 
-export const Thumnail = ({
+export const Thumbnail = ({
     type,
     extension,
     url = "",
@@ -15,7 +15,8 @@ export const Thumnail = ({
     imageClassName?: string;
     className?: string;
 }) => {
-    const isImage = type === "image" && extension != "svg";
+    const isImage = type === "image" && extension != "svg" && !!url;
+
     return (
         <figure className={cn("thumbnail", className)}>
             <Image

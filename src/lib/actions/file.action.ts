@@ -2,9 +2,9 @@
 
 import { InputFile } from "node-appwrite/file";
 import { createAdminClient } from "../appwrite";
-import { handleError } from "./user.actions";
+import { getCurrentUser, handleError } from "./user.actions";
 import { appwriteConfig } from "../appwrite/config";
-import { ID } from "node-appwrite";
+import { ID, Models, Query } from "node-appwrite";
 import { constructFileUrl, getFileType } from "../utils";
 import { revalidatePath } from "next/cache";
 
@@ -58,5 +58,40 @@ export const uploadFile = async ({
         return newFile;
     } catch (error) {
         handleError(error, "Failed to upload file");
+    }
+};
+
+const createQueries = (currentUser: Models.Row, types: string[]) => {
+    const queries = [
+        Query.or([
+            Query.equal("owner", currentUser.$id),
+            Query.contains("users", currentUser.email),
+        ]),
+    ];
+    if (types.length > 0) queries.push(Query.equal("type", types));
+    // console.log(queries);
+
+    // Todo: Search, sort, limit query
+    return queries;
+};
+
+export const getFiles = async ({ types }: GetFilesProps) => {
+    const { tablesDb } = await createAdminClient();
+
+    try {
+        const currentUser = await getCurrentUser();
+        if (!currentUser) return;
+
+        const queries = createQueries(currentUser, types);
+        const files = await tablesDb.listRows(
+            appwriteConfig.databaseId,
+            appwriteConfig.fileTableId,
+            queries
+        );
+        // console.log(files);
+
+        return files;
+    } catch (error) {
+        handleError(error, "Failed to fetch files");
     }
 };
