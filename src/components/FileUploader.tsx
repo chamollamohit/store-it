@@ -52,16 +52,37 @@ function FileUploader({
                     accountId,
                     ownerId,
                     path,
-                }).then((uploadFile) => {
-                    if (uploadFile) {
-                        setFiles((prev) =>
-                            prev.filter(
-                                (prevFile) => prevFile.name != file.name
-                            )
-                        );
-                    }
-                    console.log(uploadFile);
-                });
+                })
+                    .then((uploadFile) => {
+                        if (uploadFile) {
+                            setFiles((prev) =>
+                                prev.filter(
+                                    (prevFile) => prevFile.name != file.name
+                                )
+                            );
+                        }
+                    })
+                    .then(() =>
+                        toast.success(`${file.name} uploaded successfully`, {
+                            classNames: {
+                                toast: "!bg-red !rounded-[10px]",
+                                title: "!text-white ",
+                            },
+                            position: "top-center",
+                        })
+                    )
+                    .catch(() =>
+                        toast.error(
+                            `${file.name} not uploaded.. Try again later`,
+                            {
+                                classNames: {
+                                    toast: "!bg-red !rounded-[10px]",
+                                    title: "!text-white ",
+                                },
+                                position: "top-center",
+                            }
+                        )
+                    );
             });
             await Promise.all(uploadFilePromise);
         },
