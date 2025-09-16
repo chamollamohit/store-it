@@ -4,6 +4,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -22,21 +23,66 @@ import { Models } from "node-appwrite";
 import { actionsDropdownItems } from "@/Constants";
 import Link from "next/link";
 import { constructDownloadUrl } from "@/lib/utils";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 const ActionDropdown = ({ file }: { file: Models.Row }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDropDownOpen, setIsDropDownOpen] = useState(false);
     const [action, setAction] = useState<ActionType>();
+    const [name, setName] = useState(file.NAME);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const closeAllModal = () => {
+        setIsModalOpen(false);
+        setIsDropDownOpen(false);
+        setAction(false);
+        setName(file.NAME);
+    };
+
+    const handleAction = async () => {};
+
     const renderDialogContent = () => {
+        if (!action) return null;
+        const { value, label } = action;
         return (
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Are you absolutely sure?</DialogTitle>
-                    <DialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete your account and remove your data from our
-                        servers.
-                    </DialogDescription>
+            <DialogContent className="shad-dialog button">
+                <DialogHeader className="flex flex-col gap-3">
+                    <DialogTitle className="text-center text-light-100">
+                        {label}
+                    </DialogTitle>
+                    {value === "rename" && (
+                        <Input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
+                    )}
                 </DialogHeader>
+                {["rename", "delete", "share"].includes(value) && (
+                    <DialogFooter className="flex flex-col gap-3 md:flex-row">
+                        <Button
+                            onClick={closeAllModal}
+                            className="modal-cancel-button"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={handleAction}
+                            className="modal-submit-button"
+                        >
+                            <p className="capitalize">{value}</p>
+                            {isLoading && (
+                                <Image
+                                    src={"/icons/loader.svg"}
+                                    alt="loader"
+                                    width={24}
+                                    height={24}
+                                    className="animate-spin"
+                                />
+                            )}
+                        </Button>
+                    </DialogFooter>
+                )}
             </DialogContent>
         );
     };

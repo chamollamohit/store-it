@@ -302,6 +302,57 @@
   }
 
 
+  /* ActionsDropdown */
+  .rename-input-field {
+    @apply text-[14px] leading-[20px] font-normal outline-none ring-offset-transparent focus:ring-transparent focus:ring-offset-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 h-[52px] w-full rounded-full border px-4 shadow-drop-1;
+  }
+
+  .delete-confirmation {
+    @apply text-center text-light-100;
+  }
+
+  .delete-file-name {
+    @apply font-medium text-brand-100;
+  }
+
+  .modal-cancel-button {
+    @apply h-[52px] flex-1 rounded-full bg-white text-light-100 hover:bg-gray-100;
+  }
+
+  .modal-submit-button {
+    @apply bg-brand hover:bg-brand-100 transition-all rounded-full text-[14px] leading-[20px] font-medium !mx-0 h-[52px] w-full flex-1;
+  }
+
+  /* ActionsModalContent */
+  .file-details-thumbnail {
+    @apply !mb-1 flex items-center gap-3 rounded-xl border border-light-200/40 bg-light-400/50 p-3;
+  }
+
+  .file-details-label {
+    @apply text-[14px] leading-[20px] font-normal w-[30%] text-light-100;
+  }
+
+  .file-details-value {
+    @apply text-[14px] leading-[20px] font-semibold flex-1;
+  }
+
+  .share-wrapper {
+    @apply !mt-2 space-y-2;
+  }
+
+  .share-input-field {
+    @apply text-[14px] leading-[20px] font-normal outline-none ring-offset-transparent focus:ring-transparent focus:ring-offset-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 h-[52px] w-full rounded-full border px-4 shadow-drop-1;
+  }
+
+  .share-remove-user {
+    @apply rounded-full bg-transparent text-light-100 shadow-none hover:bg-transparent;
+  }
+
+  .remove-icon {
+    @apply aspect-square rounded-full;
+  }
+
+
   /* ===== FILE UPLOADER ===== */
   .uploader-button {
     @apply bg-brand hover:bg-brand-100 transition-all rounded-full text-[14px] leading-[20px] font-medium h-[52px] gap-2 px-10 shadow-drop-1;
