@@ -10,7 +10,11 @@ const Card = ({ file }: { file: Models.Row }) => {
     // console.log(file);
 
     return (
-        <Link href={file.url} target="_blank" className="file-card">
+        <Link
+            href={file.url}
+            target="_blank"
+            className="file-card cursor-default"
+        >
             <div className="flex justify-between">
                 <Thumbnail
                     type={file.type}
@@ -31,7 +35,7 @@ const Card = ({ file }: { file: Models.Row }) => {
                     className="body-2 text-light-100"
                 />
                 <p className="caption line-clamp-1 text-light-200">
-                    By: {file.owner.email}
+                    {/* By: {file.owner.email} */}
                 </p>
             </div>
         </Link>

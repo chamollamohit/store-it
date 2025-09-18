@@ -10,6 +10,8 @@ async function page({ params }: SearchParamProps) {
 
     const types = getFileTypesParams(type) as FileType[];
     const files = await getFiles({ types });
+    // console.log(files);
+
     return (
         <div className="page-container">
             <section className="w-full">

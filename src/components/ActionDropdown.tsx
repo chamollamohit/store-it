@@ -25,21 +25,49 @@ import Link from "next/link";
 import { constructDownloadUrl } from "@/lib/utils";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { deleteFile, renameFile } from "@/lib/actions/file.action";
+import { usePathname } from "next/navigation";
+import { FileDetails } from "./ui/ActionModalConten";
 const ActionDropdown = ({ file }: { file: Models.Row }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDropDownOpen, setIsDropDownOpen] = useState(false);
     const [action, setAction] = useState<ActionType>();
     const [name, setName] = useState(file.NAME);
     const [isLoading, setIsLoading] = useState(false);
-
+    const path = usePathname();
     const closeAllModal = () => {
         setIsModalOpen(false);
         setIsDropDownOpen(false);
         setAction(false);
         setName(file.NAME);
+        // console.log(file);
     };
 
-    const handleAction = async () => {};
+    const handleAction = async () => {
+        if (!action) return;
+        setIsLoading(true);
+        let success = false;
+        const actions = {
+            rename: () =>
+                renameFile({
+                    fileId: file.$id,
+                    name,
+                    extension: file.extension,
+                    path,
+                }),
+            share: () => console.log("share"),
+            delete: () =>
+                deleteFile({
+                    fileId: file.$id,
+                    bucketFileId: file.bucketFileId,
+                    path,
+                }),
+        };
+        success = await actions[action.value as keyof typeof actions]();
+        if (success) closeAllModal(false);
+
+        setIsLoading(false);
+    };
 
     const renderDialogContent = () => {
         if (!action) return null;
@@ -57,6 +85,7 @@ const ActionDropdown = ({ file }: { file: Models.Row }) => {
                             onChange={(e) => setName(e.target.value)}
                         />
                     )}
+                    {value === "details" && <FileDetails file={file} />}
                 </DialogHeader>
                 {["rename", "delete", "share"].includes(value) && (
                     <DialogFooter className="flex flex-col gap-3 md:flex-row">
@@ -69,6 +98,7 @@ const ActionDropdown = ({ file }: { file: Models.Row }) => {
                         <Button
                             onClick={handleAction}
                             className="modal-submit-button"
+                            disabled={isLoading}
                         >
                             <p className="capitalize">{value}</p>
                             {isLoading && (
@@ -99,10 +129,11 @@ const ActionDropdown = ({ file }: { file: Models.Row }) => {
                         alt="dot"
                         width={24}
                         height={24}
+                        className="cursor-pointer"
                     />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                    <DropdownMenuLabel className="max-w-[200px] ">
+                    <DropdownMenuLabel className="max-w-[200px]">
                         {file.NAME}
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />

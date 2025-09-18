@@ -88,10 +88,81 @@ export const getFiles = async ({ types }: GetFilesProps) => {
             appwriteConfig.fileTableId,
             queries
         );
-        // console.log(files);
+        const check = await tablesDb.getRow(
+            appwriteConfig.databaseId,
+            appwriteConfig.fileTableId,
+            queries
+        );
+        console.log(files);
 
         return files;
     } catch (error) {
         handleError(error, "Failed to fetch files");
+    }
+};
+
+export const renameFile = async ({
+    fileId,
+    name,
+    extension,
+    path,
+}: RenameFileProps) => {
+    const { tablesDb } = await createAdminClient();
+
+    try {
+        const newName = `${name}.${extension}`;
+        const updatedFile = await tablesDb.updateRow(
+            appwriteConfig.databaseId,
+            appwriteConfig.fileTableId,
+            fileId,
+            { NAME: newName }
+        );
+        revalidatePath(path);
+        return updatedFile;
+    } catch (error) {
+        handleError(error, "Failed to rename error");
+    }
+};
+
+export const deleteFile = async ({
+    fileId,
+    bucketFileId,
+    path,
+}: DeleteFileProps) => {
+    const { tablesDb, storage } = await createAdminClient();
+    try {
+        const deletedFile = await tablesDb.deleteRow(
+            appwriteConfig.databaseId,
+            appwriteConfig.fileTableId,
+            fileId
+        );
+        if (deletedFile) {
+            await storage.deleteFile(appwriteConfig.bucketId, bucketFileId);
+        }
+        revalidatePath(path);
+        return { status: "success" };
+    } catch (error) {
+        handleError(error, "Unable to delete file");
+    }
+};
+
+export const updateFileUsers = async ({
+    fileId,
+    emails,
+    path,
+}: UpdateFileUsersProps) => {
+    const { tablesDb } = await createAdminClient();
+
+    try {
+        const updateFile = await tablesDb.updateRow(
+            appwriteConfig.databaseId,
+            appwriteConfig.fileTableId,
+            fileId,
+            { users: emails }
+        );
+        revalidatePath(path);
+        return updateFile;
+    } catch (error) {
+        handleError(error, "Failed to share file");
     }
 };
