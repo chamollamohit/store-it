@@ -1,5 +1,5 @@
 "use client";
-import React, { act, useState } from "react";
+import React, { useState } from "react";
 import {
     Dialog,
     DialogContent,
@@ -32,7 +32,7 @@ import { ActionType, MyFile } from "../../types";
 const ActionDropdown = ({ file }: { file: MyFile }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDropDownOpen, setIsDropDownOpen] = useState(false);
-    const [action, setAction] = useState<ActionType>();
+    const [action, setAction] = useState<ActionType | false>();
     const [name, setName] = useState(file.NAME);
     const [isLoading, setIsLoading] = useState(false);
     const path = usePathname();
@@ -47,7 +47,7 @@ const ActionDropdown = ({ file }: { file: MyFile }) => {
     const handleAction = async () => {
         if (!action) return;
         setIsLoading(true);
-        let success = false;
+        let success;
         const actions = {
             rename: () =>
                 renameFile({
@@ -65,7 +65,7 @@ const ActionDropdown = ({ file }: { file: MyFile }) => {
                 }),
         };
         success = await actions[action.value as keyof typeof actions]();
-        if (success) closeAllModal(false);
+        if (success) closeAllModal();
         console.log(action);
 
         setIsLoading(false);

@@ -5,8 +5,9 @@ import { Thumbnail } from "./Thumbnail";
 import { convertFileSize } from "@/lib/utils";
 import FormattedDateTime from "./FormattedDateTime";
 import ActionDropdown from "./ActionDropdown";
+import { MyFile } from "../../types";
 
-const Card = ({ file }: { file: Models.Row }) => {
+const Card = ({ file }: { file: MyFile }) => {
     // console.log(file);
 
     return (

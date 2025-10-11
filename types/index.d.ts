@@ -77,4 +77,14 @@ declare interface ShareInputProps {
 
 declare interface MyFile extends Models.Row {
     NAME: string;
+    $id: string;
+    extension: string;
+    bucketFileId: string;
+    size: number;
+    owner: string;
+    fullName: string;
+    $updatedAt: string;
+    type: string;
+    $createdAt: string;
+    url: string;
 }
