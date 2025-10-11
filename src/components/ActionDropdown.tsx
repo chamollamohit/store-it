@@ -47,7 +47,7 @@ const ActionDropdown = ({ file }: { file: MyFile }) => {
     const handleAction = async () => {
         if (!action) return;
         setIsLoading(true);
-        let success;
+
         const actions = {
             rename: () =>
                 renameFile({
@@ -67,7 +67,8 @@ const ActionDropdown = ({ file }: { file: MyFile }) => {
                     path,
                 }),
         };
-        success = await actions[action.value as keyof typeof actions]();
+        const result = await actions[action.value as keyof typeof actions]();
+        const success = !!result;
         if (success) closeAllModal();
         console.log(action);
 
