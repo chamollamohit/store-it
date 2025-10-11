@@ -8,6 +8,14 @@ import { ID, Models, Query } from "node-appwrite";
 import { constructFileUrl, getFileType } from "../utils";
 import { revalidatePath } from "next/cache";
 import path from "path";
+import {
+    DeleteFileProps,
+    GetFilesProps,
+    MyFile,
+    RenameFileProps,
+    UpdateFileUsersProps,
+    UploadFileProps,
+} from "../../../types";
 
 export const uploadFile = async ({
     file,
@@ -62,7 +70,7 @@ export const uploadFile = async ({
     }
 };
 
-const createQueries = (currentUser: Models.Row, types: string[]) => {
+const createQueries = (currentUser: MyFile, types: string[]) => {
     const queries = [
         Query.or([
             Query.equal("owner", currentUser.$id),
@@ -83,13 +91,13 @@ export const getFiles = async ({ types }: GetFilesProps) => {
         const currentUser = await getCurrentUser();
         if (!currentUser) return;
 
-        const queries = createQueries(currentUser, types);
+        const queries = createQueries(currentUser as unknown as MyFile, types);
         const files = await tablesDb.listRows(
             appwriteConfig.databaseId,
             appwriteConfig.fileTableId,
             queries
         );
-        const check = await tablesDb.colum;
+        // const check = await tablesDb.column;
         console.log(files);
 
         return files;

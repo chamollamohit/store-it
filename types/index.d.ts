@@ -87,4 +87,5 @@ declare interface MyFile extends Models.Row {
     type: string;
     $createdAt: string;
     url: string;
+    email: string;
 }
