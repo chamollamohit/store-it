@@ -56,7 +56,10 @@ const ActionDropdown = ({ file }: { file: MyFile }) => {
                     extension: file.extension,
                     path,
                 }),
-            share: () => console.log("share"),
+            share: () => {
+                console.log("share");
+                return true;
+            },
             delete: () =>
                 deleteFile({
                     fileId: file.$id,
