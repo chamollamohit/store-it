@@ -11,7 +11,6 @@ async function page({ params }: SearchParamProps) {
 
     const types = getFileTypesParams(type) as FileType[];
     const files = await getFiles({ types });
-    // console.log(files);
 
     return (
         <div className="page-container">
@@ -29,9 +28,9 @@ async function page({ params }: SearchParamProps) {
                     </div>
                 </div>
             </section>
-            {files && files.total > 0 ? (
+            {files && files.length > 0 ? (
                 <section className="file-list">
-                    {files?.rows.map((file) => (
+                    {files?.map((file) => (
                         <Card key={file.$id} file={file as unknown as MyFile} />
                     ))}
                 </section>

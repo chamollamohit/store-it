@@ -97,10 +97,18 @@ export const getFiles = async ({ types }: GetFilesProps) => {
             appwriteConfig.fileTableId,
             queries
         );
-        // const check = await tablesDb.column;
-        console.log(files);
+        // const check = files.rows.forEach((file) => console.log(file.owner));
+        const fileOwner = files.rows.map(async (file) => {
+            const owner = await tablesDb.getRow(
+                appwriteConfig.databaseId,
+                appwriteConfig.usersTableId,
+                file.owner
+            );
+            return { ...file, owner };
+        });
+        const allFiles = await Promise.all(fileOwner);
 
-        return files;
+        return allFiles;
     } catch (error) {
         handleError(error, "Failed to fetch files");
     }

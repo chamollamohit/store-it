@@ -81,8 +81,9 @@ declare interface MyFile extends Models.Row {
     extension: string;
     bucketFileId: string;
     size: number;
-    owner: string;
-    fullName: string;
+    owner: {
+        fullName: string;
+    };
     $updatedAt: string;
     type: string;
     $createdAt: string;
