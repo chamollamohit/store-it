@@ -1,3 +1,5 @@
+import { Models } from "appwrite";
+
 declare type FileType = "document" | "image" | "video" | "audio" | "other";
 
 declare interface ActionType {
@@ -71,4 +73,8 @@ declare interface ShareInputProps {
     file: Models.Document;
     onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onRemove: (email: string) => void;
+}
+
+declare interface MyFile extends Models.Row {
+    NAME: string;
 }

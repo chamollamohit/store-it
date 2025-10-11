@@ -19,7 +19,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
-import { Models } from "node-appwrite";
+
 import { actionsDropdownItems } from "@/Constants";
 import Link from "next/link";
 import { constructDownloadUrl } from "@/lib/utils";
@@ -28,7 +28,8 @@ import { Button } from "./ui/button";
 import { deleteFile, renameFile } from "@/lib/actions/file.action";
 import { usePathname } from "next/navigation";
 import { FileDetails } from "./ui/ActionModalConten";
-const ActionDropdown = ({ file }: { file: Models.Row }) => {
+import { ActionType, MyFile } from "../../types";
+const ActionDropdown = ({ file }: { file: MyFile }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDropDownOpen, setIsDropDownOpen] = useState(false);
     const [action, setAction] = useState<ActionType>();
@@ -65,6 +66,7 @@ const ActionDropdown = ({ file }: { file: Models.Row }) => {
         };
         success = await actions[action.value as keyof typeof actions]();
         if (success) closeAllModal(false);
+        console.log(action);
 
         setIsLoading(false);
     };

@@ -7,6 +7,7 @@ import { appwriteConfig } from "../appwrite/config";
 import { ID, Models, Query } from "node-appwrite";
 import { constructFileUrl, getFileType } from "../utils";
 import { revalidatePath } from "next/cache";
+import path from "path";
 
 export const uploadFile = async ({
     file,
@@ -88,11 +89,7 @@ export const getFiles = async ({ types }: GetFilesProps) => {
             appwriteConfig.fileTableId,
             queries
         );
-        const check = await tablesDb.getRow(
-            appwriteConfig.databaseId,
-            appwriteConfig.fileTableId,
-            queries
-        );
+        const check = await tablesDb.colum;
         console.log(files);
 
         return files;
