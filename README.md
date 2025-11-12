@@ -14,14 +14,19 @@ You can view a live demo of the project deployed on Vercel here:
 
 ## ✨ Features
 
-- **Secure Authentication:** User sign-up and login functionality handled by Appwrite.
-- **File Uploading:** Easily upload files to a secure storage bucket.
-- **Dynamic File List:** View all your uploaded files in a clean, card-based layout.
-- **File Actions:** Perform actions on each file:
-    - **Rename:** Update the name of your files on the fly.
-    - **Delete:** Securely remove files from your storage.
-    - **Share (Upcoming):** Functionality to share files with others.
-- **Responsive Design:** A beautiful and functional interface that works on all devices, built with Tailwind CSS.
+- **✨ Secure Passwordless Auth:** Sign up or log in using only your email. A one-time password (OTP) is sent to your inbox for secure, password-free access.
+- **📊 Storage Dashboard:** A visual radial chart shows your total storage used (out of the 2GB limit).
+- **🗂️ By-Type Summary:** The dashboard categorizes your files (Documents, Images, Media, Others) and shows the total size and most recent upload for each category.
+- **📤 Drag-and-Drop Upload:** A modern `react-dropzone` uploader with file previews, a 50MB file size limit, and toast notifications (`sonner`) for upload status.
+- **🔍 Real-time Search:** A debounced search bar to instantly find files by name across your entire library.
+- **📂 Categorized Views:** Browse files in dedicated, dynamic pages for `/documents`, `/images`, `/media`, and `/others`/page.tsx`].
+- **↕️ File Sorting:** Sort any file view by name (A-Z, Z-A), date created (newest, oldest), or size (highest, lowest).
+- **⚡ File Actions:** Perform actions on each file via a dropdown menu:
+    - **✍️ Rename:** Update the name of your files.
+    - **🗑️ Delete:** Securely remove files from storage and the database.
+    - **📥 Download:** Download the original file directly to your device.
+    - **ℹ️ View Details:** A modal showing file format, size, owner, and modification date.
+    - **🚀 Share (Upcoming):** Backend logic for sharing is implemented, but the UI component is currently disabled.
 
 ---
 
@@ -30,18 +35,21 @@ You can view a live demo of the project deployed on Vercel here:
 This project is built with a modern, type-safe, and efficient stack:
 
 - **Frontend:**
-    - **Next.js** - React framework for server-side rendering and static site generation.
+    - **Next.js (App Router)** - React framework for server-side rendering and Server Actions.
     - **React** - A JavaScript library for building user interfaces.
-    - **TypeScript** - A typed superset of JavaScript that compiles to plain JavaScript.
+    - **TypeScript** - A typed superset of JavaScript.
 - **Backend (BaaS):**
     - **Appwrite** - Open-source Backend-as-a-Service for web and mobile apps. Used for:
-        - Authentication
-        - Database (storing file metadata)
-        - Storage (storing the actual files)
-- **Styling:**
+        - **Authentication:** Passwordless Email OTP (Magic Link).
+        - **Database:** Storing file metadata, user info, and relationships.
+        - **Storage:** Storing the actual uploaded files in buckets.
+- **Styling & UI:**
     - **Tailwind CSS** - A utility-first CSS framework for rapid UI development.
     - **shadcn/ui** - Re-usable components built using Radix UI and Tailwind CSS.
     - **Lucide React** - Beautiful and consistent icons.
+    - **Recharts** - For the storage usage chart.
+    - **Sonner** - For toast notifications.
+    - **React Dropzone** - For drag-and-drop file uploads.
 - **Deployment:**
     - **Vercel** - Optimized for deploying Next.js applications.
 
