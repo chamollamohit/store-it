@@ -45,8 +45,6 @@ This project is built with a modern, type-safe, and efficient stack:
 - **Deployment:**
     - **Vercel** - Optimized for deploying Next.js applications.
 
----
-
 ### 📄 License
 
 This project is licensed under the MIT License. See the LICENSE file for details.

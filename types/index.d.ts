@@ -90,3 +90,18 @@ declare interface MyFile extends Models.Row {
     url: string;
     email: string;
 }
+
+export interface FileTypeSpaceInfo {
+    size: number;
+    latestDate: string;
+}
+
+export interface TotalSpaceInfo {
+    image: FileTypeSpaceInfo;
+    document: FileTypeSpaceInfo;
+    video: FileTypeSpaceInfo;
+    audio: FileTypeSpaceInfo;
+    other: FileTypeSpaceInfo;
+    used: number;
+    all: number;
+}

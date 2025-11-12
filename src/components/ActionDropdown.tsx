@@ -70,7 +70,6 @@ const ActionDropdown = ({ file }: { file: MyFile }) => {
         const result = await actions[action.value as keyof typeof actions]();
         const success = !!result;
         if (success) closeAllModal();
-        console.log(action);
 
         setIsLoading(false);
     };
@@ -92,6 +91,15 @@ const ActionDropdown = ({ file }: { file: MyFile }) => {
                         />
                     )}
                     {value === "details" && <FileDetails file={file} />}
+                    {value === "delete" && (
+                        <p className="delete-confirmation">
+                            Are you sure you want to delete{` `}
+                            <span className="delete-file-name">
+                                {file.NAME}
+                            </span>
+                            ?
+                        </p>
+                    )}
                 </DialogHeader>
                 {["rename", "delete", "share"].includes(value) && (
                     <DialogFooter className="flex flex-col gap-3 md:flex-row">

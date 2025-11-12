@@ -1,9 +1,9 @@
 export const navItems = [
-    // {
-    //     name: "Dashboard",
-    //     icon: "/icons/dashboard.svg",
-    //     url: "/",
-    // },
+    {
+        name: "Dashboard",
+        icon: "/icons/dashboard.svg",
+        url: "/",
+    },
     {
         name: "Documents",
         icon: "/icons/documents.svg",
@@ -37,11 +37,11 @@ export const actionsDropdownItems = [
         icon: "/icons/info.svg",
         value: "details",
     },
-    {
-        label: "Share",
-        icon: "/icons/share.svg",
-        value: "share",
-    },
+    // {
+    //     label: "Share",
+    //     icon: "/icons/share.svg",
+    //     value: "share",
+    // },
     {
         label: "Download",
         icon: "/icons/download.svg",
@@ -51,6 +51,33 @@ export const actionsDropdownItems = [
         label: "Delete",
         icon: "/icons/delete.svg",
         value: "delete",
+    },
+];
+
+export const sortTypes = [
+    {
+        label: "Date created (newest)",
+        value: "$createdAt-desc",
+    },
+    {
+        label: "Created Date (oldest)",
+        value: "$createdAt-asc",
+    },
+    {
+        label: "Name (A-Z)",
+        value: "NAME-asc",
+    },
+    {
+        label: "Name (Z-A)",
+        value: "NAME-desc",
+    },
+    {
+        label: "Size (Highest)",
+        value: "size-desc",
+    },
+    {
+        label: "Size (Lowest)",
+        value: "size-asc",
     },
 ];
 

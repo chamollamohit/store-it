@@ -71,7 +71,6 @@ function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
         } finally {
             setIsLoading(false);
         }
-        console.log(accountId);
     };
 
     return (

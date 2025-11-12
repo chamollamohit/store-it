@@ -30,7 +30,7 @@ async function Layout({ children }: { children: React.ReactNode }) {
                         userId={currentUser.$id}
                         accountId={currentUser.accountId}
                     />
-                    <div className="main-content remove-scrollbar">
+                    <div className="main-content scrollbar-hide">
                         {children}
                     </div>
                 </div>

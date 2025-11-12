@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { TotalSpaceInfo } from "../../types";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -117,6 +118,9 @@ export const getFileIcon = (extension: string, type: string) => {
     }
 };
 
+// APPWRITE URL UTILS
+// Construct appwrite file URL - https://appwrite.io/docs/apis/rest#images
+
 export const constructFileUrl = (bucketFileId: string) => {
     return `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${process.env.NEXT_PUBLIC_APPWRITE_BUCKET}/files/${bucketFileId}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT}`;
 };
@@ -169,6 +173,49 @@ export const formatDateTime = (isoString: string | null | undefined) => {
     const month = monthNames[date.getMonth()];
 
     return `${time}, ${day} ${month}`;
+};
+
+export const calculatePercentage = (sizeInBytes: number) => {
+    const totalSizeInBytes = 2 * 1024 * 1024 * 1024; // 2GB in bytes
+    const percentage = (sizeInBytes / totalSizeInBytes) * 100;
+    return Number(percentage.toFixed(2));
+};
+
+// DASHBOARD UTILS
+export const getUsageSummary = (totalSpace: TotalSpaceInfo) => {
+    return [
+        {
+            title: "Documents",
+            size: totalSpace.document.size,
+            latestDate: totalSpace.document.latestDate,
+            icon: "/icons/file-document-light.svg",
+            url: "/documents",
+        },
+        {
+            title: "Images",
+            size: totalSpace.image.size,
+            latestDate: totalSpace.image.latestDate,
+            icon: "/icons/file-image-light.svg",
+            url: "/images",
+        },
+        {
+            title: "Media",
+            size: totalSpace.video.size + totalSpace.audio.size,
+            latestDate:
+                totalSpace.video.latestDate > totalSpace.audio.latestDate
+                    ? totalSpace.video.latestDate
+                    : totalSpace.audio.latestDate,
+            icon: "/icons/file-video-light.svg",
+            url: "/media",
+        },
+        {
+            title: "Others",
+            size: totalSpace.other.size,
+            latestDate: totalSpace.other.latestDate,
+            icon: "/icons/file-other-light.svg",
+            url: "/others",
+        },
+    ];
 };
 
 export const getFileTypesParams = (type: string) => {

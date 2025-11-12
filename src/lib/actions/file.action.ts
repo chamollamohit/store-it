@@ -1,15 +1,15 @@
 "use server";
 
 import { InputFile } from "node-appwrite/file";
-import { createAdminClient } from "../appwrite";
+import { createAdminClient, createSessionClient } from "../appwrite";
 import { getCurrentUser, handleError } from "./user.actions";
 import { appwriteConfig } from "../appwrite/config";
-import { ID, Models, Query } from "node-appwrite";
+import { ID, Query } from "node-appwrite";
 import { constructFileUrl, getFileType } from "../utils";
 import { revalidatePath } from "next/cache";
-import path from "path";
 import {
     DeleteFileProps,
+    FileType,
     GetFilesProps,
     MyFile,
     RenameFileProps,
@@ -70,7 +70,13 @@ export const uploadFile = async ({
     }
 };
 
-const createQueries = (currentUser: MyFile, types: string[]) => {
+const createQueries = (
+    currentUser: MyFile,
+    types: string[],
+    searchText: string,
+    sort: string,
+    limit?: number
+) => {
     const queries = [
         Query.or([
             Query.equal("owner", currentUser.$id),
@@ -78,20 +84,42 @@ const createQueries = (currentUser: MyFile, types: string[]) => {
         ]),
     ];
     if (types.length > 0) queries.push(Query.equal("type", types));
+    if (searchText) queries.push(Query.contains("NAME", searchText));
+    if (limit) queries.push(Query.limit(limit));
+    if (sort) {
+        const [sortBy, orderBy] = sort.split("-");
+
+        queries.push(
+            orderBy === "asc" ? Query.orderAsc(sortBy) : Query.orderDesc(sortBy)
+        );
+    }
     // console.log(queries);
 
-    // Todo: Search, sort, limit query
     return queries;
 };
 
-export const getFiles = async ({ types }: GetFilesProps) => {
+export const getFiles = async ({
+    types,
+    searchText = "",
+    sort = "$createdAt-desc",
+    limit,
+}: GetFilesProps) => {
     const { tablesDb } = await createAdminClient();
 
     try {
         const currentUser = await getCurrentUser();
         if (!currentUser) return;
+        if (!currentUser) {
+            throw new Error("User is not authenticated");
+        }
 
-        const queries = createQueries(currentUser as unknown as MyFile, types);
+        const queries = createQueries(
+            currentUser as unknown as MyFile,
+            types,
+            searchText,
+            sort,
+            limit
+        );
         const files = await tablesDb.listRows(
             appwriteConfig.databaseId,
             appwriteConfig.fileTableId,
@@ -104,13 +132,21 @@ export const getFiles = async ({ types }: GetFilesProps) => {
                 appwriteConfig.usersTableId,
                 file.owner
             );
-            return { ...file, owner };
+
+            return {
+                ...file,
+                owner,
+            };
         });
-        const allFiles = await Promise.all(fileOwner);
+
+        // @ts-expect-error "Ignore"
+
+        const allFiles: MyFile[] = await Promise.all(fileOwner);
 
         return allFiles;
     } catch (error) {
         handleError(error, "Failed to fetch files");
+        return [];
     }
 };
 
@@ -179,3 +215,46 @@ export const updateFileUsers = async ({
         handleError(error, "Failed to share file");
     }
 };
+
+export async function getTotalSpaceUsed() {
+    try {
+        const { tablesDb } = await createSessionClient();
+        const currentUser = await getCurrentUser();
+        if (!currentUser) throw new Error("User is not authenticated.");
+
+        const files = await tablesDb.listRows(
+            appwriteConfig.databaseId,
+            appwriteConfig.fileTableId,
+            [Query.equal("owner", [currentUser.$id]), Query.limit(100)]
+        );
+
+        const totalSpace = {
+            image: { size: 0, latestDate: "" },
+            document: { size: 0, latestDate: "" },
+            video: { size: 0, latestDate: "" },
+            audio: { size: 0, latestDate: "" },
+            other: { size: 0, latestDate: "" },
+            used: 0,
+            all: 2 * 1024 * 1024 * 1024 /* 2GB available bucket storage */,
+        };
+        console.log(files);
+
+        files.rows.forEach((file) => {
+            const fileType = file.type as FileType;
+            totalSpace[fileType].size += file.size;
+            totalSpace.used += file.size;
+
+            if (
+                !totalSpace[fileType].latestDate ||
+                new Date(file.$updatedAt) >
+                    new Date(totalSpace[fileType].latestDate)
+            ) {
+                totalSpace[fileType].latestDate = file.$updatedAt;
+            }
+        });
+
+        return totalSpace;
+    } catch (error) {
+        handleError(error, "Error calculating total space used:, ");
+    }
+}
