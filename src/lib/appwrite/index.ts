@@ -23,6 +23,9 @@ export const createSessionClient = async () => {
         get tablesDb() {
             return new TablesDB(client);
         },
+        get storage() {
+            return new Storage(client);
+        },
     };
 };
 

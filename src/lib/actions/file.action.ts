@@ -1,6 +1,5 @@
 "use server";
 
-import { InputFile } from "node-appwrite/file";
 import { createAdminClient, createSessionClient } from "../appwrite";
 import { getCurrentUser, handleError } from "./user.actions";
 import { appwriteConfig } from "../appwrite/config";
@@ -8,41 +7,92 @@ import { ID, Query } from "node-appwrite";
 import { constructFileUrl, getFileType } from "../utils";
 import { revalidatePath } from "next/cache";
 import {
+    CreateFileDocumentProps,
     DeleteFileProps,
     FileType,
     GetFilesProps,
     MyFile,
     RenameFileProps,
     UpdateFileUsersProps,
-    UploadFileProps,
 } from "../../../types";
 
-export const uploadFile = async ({
-    file,
+// export const uploadFile = async ({
+//     file,
+//     ownerId,
+//     accountId,
+//     path,
+// }: UploadFileProps) => {
+//     const { storage, tablesDb } = await createAdminClient();
+
+//     try {
+//         const inputFile = InputFile.fromBuffer(file, file.name);
+//         const bucketFile = await storage.createFile(
+//             appwriteConfig.bucketId,
+//             ID.unique(),
+//             inputFile
+//         );
+
+//         const fileDocument = {
+//             type: getFileType({ fileName: bucketFile.name }).type,
+//             NAME: bucketFile.name,
+//             url: constructFileUrl(bucketFile.$id),
+//             extension: getFileType({ fileName: bucketFile.name }).extension,
+//             size: bucketFile.sizeOriginal,
+//             owner: ownerId,
+//             accountId,
+//             users: [],
+//             bucketFileId: bucketFile.$id,
+//         };
+
+//         const newFile = await tablesDb
+//             .createRow(
+//                 appwriteConfig.databaseId,
+//                 appwriteConfig.fileTableId,
+//                 ID.unique(),
+//                 fileDocument
+//             )
+//             .catch(async (error: unknown) => {
+//                 await storage.deleteFile(
+//                     appwriteConfig.bucketId,
+//                     bucketFile.$id
+//                 );
+//                 handleError(
+//                     error,
+//                     "Failed to upload meta data... So deleting file"
+//                 );
+//             });
+
+//         revalidatePath(path);
+//         return newFile;
+//     } catch (error) {
+//         handleError(error, "Failed to upload file");
+//     }
+// };
+
+export const createFileDocument = async ({
+    bucketFileId,
+    fileName,
+    fileSize,
     ownerId,
     accountId,
     path,
-}: UploadFileProps) => {
+}: CreateFileDocumentProps) => {
+    // Get storage as well, for the .catch block
     const { storage, tablesDb } = await createAdminClient();
 
     try {
-        const inputFile = InputFile.fromBuffer(file, file.name);
-        const bucketFile = await storage.createFile(
-            appwriteConfig.bucketId,
-            ID.unique(),
-            inputFile
-        );
-
+        // We no longer call storage.createFile here.
+        // We just build the document from the props.
         const fileDocument = {
-            type: getFileType({ fileName: bucketFile.name }).type,
-            NAME: bucketFile.name,
-            url: constructFileUrl(bucketFile.$id),
-            extension: getFileType({ fileName: bucketFile.name }).extension,
-            size: bucketFile.sizeOriginal,
+            type: getFileType({ fileName }).type,
+            NAME: fileName,
+            url: constructFileUrl(bucketFileId),
+            extension: getFileType({ fileName }).extension,
+            size: fileSize,
             owner: ownerId,
             accountId,
             users: [],
-            bucketFileId: bucketFile.$id,
+            bucketFileId: bucketFileId,
         };
 
         const newFile = await tablesDb
@@ -53,20 +103,19 @@ export const uploadFile = async ({
                 fileDocument
             )
             .catch(async (error: unknown) => {
-                await storage.deleteFile(
-                    appwriteConfig.bucketId,
-                    bucketFile.$id
-                );
+                // This is still important!
+                // If the DB write fails, delete the orphaned file from storage.
+                await storage.deleteFile(appwriteConfig.bucketId, bucketFileId);
                 handleError(
                     error,
-                    "Failed to upload meta data... So deleting file"
+                    "Failed to create file document... So deleting file"
                 );
             });
 
         revalidatePath(path);
         return newFile;
     } catch (error) {
-        handleError(error, "Failed to upload file");
+        handleError(error, "Failed to create file document");
     }
 };
 
@@ -237,7 +286,6 @@ export async function getTotalSpaceUsed() {
             used: 0,
             all: 2 * 1024 * 1024 * 1024 /* 2GB available bucket storage */,
         };
-        console.log(files);
 
         files.rows.forEach((file) => {
             const fileType = file.type as FileType;

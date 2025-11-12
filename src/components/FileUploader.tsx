@@ -7,8 +7,11 @@ import Image from "next/image";
 import { Thumbnail } from "./Thumbnail";
 import { MAX_FILE_SIZE } from "@/Constants";
 import { toast } from "sonner";
-import { uploadFile } from "@/lib/actions/file.action";
+import { createFileDocument } from "@/lib/actions/file.action";
+import { appwriteConfig } from "@/lib/appwrite/config";
 import { usePathname } from "next/navigation";
+import { storage } from "@/lib/appwrite/client";
+import { ID } from "node-appwrite";
 
 function FileUploader({
     ownerId,
@@ -47,42 +50,44 @@ function FileUploader({
                         position: "top-center",
                     });
                 }
-                return await uploadFile({
-                    file,
-                    accountId,
-                    ownerId,
-                    path,
-                })
-                    .then((uploadFile) => {
-                        if (uploadFile) {
-                            setFiles((prev) =>
-                                prev.filter(
-                                    (prevFile) => prevFile.name != file.name
-                                )
-                            );
-                        }
-                    })
-                    .then(() =>
-                        toast.success(`${file.name} uploaded successfully`, {
-                            classNames: {
-                                toast: "!bg-red !rounded-[10px]",
-                                title: "!text-white ",
-                            },
-                            position: "top-center",
-                        })
-                    )
-                    .catch(() =>
-                        toast.error(
-                            `${file.name} not uploaded.. Try again later`,
-                            {
-                                classNames: {
-                                    toast: "!bg-red !rounded-[10px]",
-                                    title: "!text-white ",
-                                },
-                                position: "top-center",
-                            }
-                        )
+                try {
+                    // 1. UPLOAD FILE (Client -> Appwrite Storage)
+                    const bucketFile = await storage.createFile(
+                        appwriteConfig.bucketId,
+                        ID.unique(),
+                        file
                     );
+
+                    // 2. SAVE METADATA (Client -> Server Action)
+                    await createFileDocument({
+                        bucketFileId: bucketFile.$id,
+                        fileName: file.name,
+                        fileSize: file.size,
+                        ownerId,
+                        accountId,
+                        path,
+                    });
+                    toast.success(`${file.name} uploaded successfully`, {
+                        classNames: {
+                            toast: "!bg-red !rounded-[10px]",
+                            title: "!text-white ",
+                        },
+                        position: "top-center",
+                    });
+                } catch (error) {
+                    console.error(error);
+                    toast.error(`${file.name} not uploaded.. Try again later`, {
+                        classNames: {
+                            toast: "!bg-red !rounded-[10px]",
+                            title: "!text-white ",
+                        },
+                        position: "top-center",
+                    });
+                } finally {
+                    setFiles((prev) =>
+                        prev.filter((prevFile) => prevFile.name != file.name)
+                    );
+                }
             });
             await Promise.all(uploadFilePromise);
         },
