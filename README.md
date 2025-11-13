@@ -26,7 +26,7 @@ You can view a live demo of the project deployed on Vercel here:
     - **🗑️ Delete:** Securely remove files from storage and the database.
     - **📥 Download:** Download the original file directly to your device.
     - **ℹ️ View Details:** A modal showing file format, size, owner, and modification date.
-    - **🚀 Share (Upcoming):** Backend logic for sharing is implemented, but the UI component is currently disabled.
+    - **🚀 Share (Upcoming)** 
 
 ---
 
