@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React from "react";
-
+import { Toaster } from "@/components/ui/sonner";
 const Layout = ({ children }: { children: React.ReactNode }) => {
     return (
         <div className="flex min-h-screen">
@@ -41,6 +41,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 </div>
                 {children}
             </section>
+            <Toaster />
         </div>
     );
 };

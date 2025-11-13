@@ -14,5 +14,3 @@ client.setSession("current");
 
 // Export a client-side storage instance
 export const storage = new Storage(client);
-
-console.log(storage);

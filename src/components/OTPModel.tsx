@@ -19,6 +19,7 @@ import Image from "next/image";
 import { Button } from "./ui/button";
 import { sendEmailOtp, verifySecret } from "@/lib/actions/user.actions";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const OTPModel = ({
     email,
@@ -38,9 +39,26 @@ const OTPModel = ({
         try {
             const sessionId = await verifySecret({ accountId, password });
 
+            if (!sessionId) {
+                toast.error(`Invalid OTP`, {
+                    classNames: {
+                        toast: "!bg-red !rounded-[10px]",
+                        title: "!text-white ",
+                    },
+                    position: "top-center",
+                });
+            }
+
             if (sessionId) router.push("/");
         } catch (error) {
             console.log("Failed to verify OTP");
+            toast.error(`Failed to verify OTP`, {
+                classNames: {
+                    toast: "!bg-red !rounded-[10px]",
+                    title: "!text-white ",
+                },
+                position: "top-center",
+            });
         }
 
         setIsLoading(false);

@@ -297,7 +297,7 @@
   }
 
   .dashboard-recent-files {
-    @apply h-full rounded-[20px] xl:h-[90vh] overflow-auto bg-white p-5 xl:p-7;
+    @apply h-full rounded-[20px] md:h-[90vh] overflow-auto bg-white p-5 xl:p-7;
   }
 
   .recent-file-details {
